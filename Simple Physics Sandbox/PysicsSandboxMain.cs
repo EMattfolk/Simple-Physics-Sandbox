@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
 
 namespace Simple_Physics_Sandbox
 {
@@ -11,6 +12,8 @@ namespace Simple_Physics_Sandbox
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        List<PhysicsObject> physicsObjects;
+        Texture2D circle;
 
         public PysicsSandboxMain()
         {
@@ -26,7 +29,7 @@ namespace Simple_Physics_Sandbox
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            physicsObjects = new List<PhysicsObject> { new Circle(50, new Vector2(100,100), new Vector2(100,100)) };
 
             base.Initialize();
         }
@@ -40,6 +43,7 @@ namespace Simple_Physics_Sandbox
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            circle = Content.Load<Texture2D>("sprites/circle");
             // TODO: use this.Content to load your game content here
         }
 
@@ -62,7 +66,10 @@ namespace Simple_Physics_Sandbox
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            foreach (PhysicsObject physicsObject in physicsObjects)
+            {
+                physicsObject.UpdatePosition(gameTime);
+            }
 
             base.Update(gameTime);
         }
@@ -75,7 +82,14 @@ namespace Simple_Physics_Sandbox
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            spriteBatch.Begin();
+
+            foreach (PhysicsObject physicsObject in physicsObjects)
+            {
+                spriteBatch.Draw(circle, physicsObject.Position, null, Color.White, 0, Vector2.Zero, 1f/4, SpriteEffects.None, 0);
+            }
+
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
