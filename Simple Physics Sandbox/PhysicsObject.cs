@@ -9,7 +9,12 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Simple_Physics_Sandbox
 {
-    class PhysicsObject
+    enum PhysicsObjectType
+    {
+        Circle
+    }
+
+    abstract class PhysicsObject
     {
         private Vector2 position, velocity;
         
@@ -32,5 +37,7 @@ namespace Simple_Physics_Sandbox
 
         public Vector2 Position { get => position; set => position = value; }
         public Vector2 Velocity { get => velocity; set => velocity = value; }
+
+        abstract public PhysicsObjectType GetPhysicsObjectType ();
     }
 }

@@ -22,5 +22,12 @@ namespace Simple_Physics_Sandbox
         {
             this.radius = radius;
         }
+
+        public float Radius { get => radius; set => radius = value; }
+
+        public override PhysicsObjectType GetPhysicsObjectType()
+        {
+            return PhysicsObjectType.Circle;
+        }
     }
 }

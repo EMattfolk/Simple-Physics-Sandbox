@@ -14,10 +14,14 @@ namespace Simple_Physics_Sandbox
         SpriteBatch spriteBatch;
         List<PhysicsObject> physicsObjects;
         Texture2D circle;
+        MouseState prevMouseState;
+        Vector2 mouseDownPosition;
 
         public PysicsSandboxMain()
         {
             graphics = new GraphicsDeviceManager(this);
+            graphics.PreferredBackBufferHeight = 720;
+            graphics.PreferredBackBufferWidth = 1280;
             Content.RootDirectory = "Content";
         }
 
@@ -29,7 +33,10 @@ namespace Simple_Physics_Sandbox
         /// </summary>
         protected override void Initialize()
         {
-            physicsObjects = new List<PhysicsObject> { new Circle(50, new Vector2(100,100), new Vector2(100,100)) };
+            physicsObjects = new List<PhysicsObject> { new Circle(50, new Vector2(0), new Vector2(10)) };
+            IsMouseVisible = true;
+            prevMouseState = Mouse.GetState();
+            mouseDownPosition = new Vector2();
 
             base.Initialize();
         }
@@ -44,7 +51,6 @@ namespace Simple_Physics_Sandbox
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             circle = Content.Load<Texture2D>("sprites/circle");
-            // TODO: use this.Content to load your game content here
         }
 
         /// <summary>
@@ -53,7 +59,7 @@ namespace Simple_Physics_Sandbox
         /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
+            
         }
 
         /// <summary>
@@ -66,6 +72,19 @@ namespace Simple_Physics_Sandbox
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            //Check for inputs
+            MouseState mouseState = Mouse.GetState();
+            if (mouseState.LeftButton == ButtonState.Pressed && prevMouseState.LeftButton == ButtonState.Released)
+            {
+                mouseDownPosition = mouseState.Position.ToVector2();
+            }
+            else if (mouseState.LeftButton == ButtonState.Released && prevMouseState.LeftButton == ButtonState.Pressed)
+            {
+                physicsObjects.Add(new Circle(50, mouseState.Position.ToVector2(), mouseDownPosition - mouseState.Position.ToVector2()));
+            }
+            prevMouseState = mouseState;
+
+            //Update physicsObjects
             foreach (PhysicsObject physicsObject in physicsObjects)
             {
                 physicsObject.UpdatePosition(gameTime);
@@ -86,7 +105,11 @@ namespace Simple_Physics_Sandbox
 
             foreach (PhysicsObject physicsObject in physicsObjects)
             {
-                spriteBatch.Draw(circle, physicsObject.Position, null, Color.White, 0, Vector2.Zero, 1f/4, SpriteEffects.None, 0);
+                if (physicsObject.GetPhysicsObjectType() == PhysicsObjectType.Circle)
+                {
+                    Circle c = (Circle)physicsObject;
+                    spriteBatch.Draw(circle, c.Position, null, Color.White, 0, new Vector2(circle.Width / 2), 2 * c.Radius / circle.Width, SpriteEffects.None, 0);
+                }
             }
 
             spriteBatch.End();
