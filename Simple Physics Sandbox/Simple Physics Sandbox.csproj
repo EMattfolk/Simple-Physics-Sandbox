@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Circle.cs" />
     <Compile Include="PhysicsObject.cs" />
+    <Compile Include="PhysicsSpace.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PysicsSandboxMain.cs" />

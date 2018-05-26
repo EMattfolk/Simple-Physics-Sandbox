@@ -10,9 +10,11 @@ namespace Simple_Physics_Sandbox
     /// </summary>
     public class PysicsSandboxMain : Game
     {
+        public static int MAXSHAPERADIUS = 80;
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        List<PhysicsObject> physicsObjects;
+        PhysicsSpace physicsSpace;
         Texture2D circle;
         MouseState prevMouseState;
         Vector2 mouseDownPosition;
@@ -33,7 +35,7 @@ namespace Simple_Physics_Sandbox
         /// </summary>
         protected override void Initialize()
         {
-            physicsObjects = new List<PhysicsObject> { new Circle(50, new Vector2(0), new Vector2(10)) };
+            physicsSpace = new PhysicsSpace(1280, 720, 80);
             IsMouseVisible = true;
             prevMouseState = Mouse.GetState();
             mouseDownPosition = new Vector2();
@@ -80,15 +82,12 @@ namespace Simple_Physics_Sandbox
             }
             else if (mouseState.LeftButton == ButtonState.Released && prevMouseState.LeftButton == ButtonState.Pressed)
             {
-                physicsObjects.Add(new Circle(50, mouseState.Position.ToVector2(), mouseDownPosition - mouseState.Position.ToVector2()));
+                physicsSpace.PhysicsObjects.Add(new Circle(10, mouseState.Position.ToVector2(), mouseDownPosition - mouseState.Position.ToVector2(), 100));
             }
             prevMouseState = mouseState;
 
             //Update physicsObjects
-            foreach (PhysicsObject physicsObject in physicsObjects)
-            {
-                physicsObject.UpdatePosition(gameTime);
-            }
+            physicsSpace.UpdateObjects(gameTime);
 
             base.Update(gameTime);
         }
@@ -103,7 +102,7 @@ namespace Simple_Physics_Sandbox
 
             spriteBatch.Begin();
 
-            foreach (PhysicsObject physicsObject in physicsObjects)
+            foreach (PhysicsObject physicsObject in physicsSpace.PhysicsObjects)
             {
                 if (physicsObject.GetPhysicsObjectType() == PhysicsObjectType.Circle)
                 {

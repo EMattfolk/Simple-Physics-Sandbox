@@ -16,18 +16,21 @@ namespace Simple_Physics_Sandbox
 
     abstract class PhysicsObject
     {
+        private static int counter = 0;
+        private int mass, id;
         private Vector2 position, velocity;
+        private HashSet<int> collisionIds;
         
-        public PhysicsObject ()
-        {
-            position = new Vector2();
-            velocity = new Vector2();
-        }
+        public PhysicsObject () : this(new Vector2(), new Vector2(), 100) { }
 
-        public PhysicsObject (Vector2 position, Vector2 velocity)
+        public PhysicsObject (Vector2 position, Vector2 velocity, int mass)
         {
             this.position = position;
             this.velocity = velocity;
+            this.mass = mass;
+            collisionIds = new HashSet<int>();
+            id = counter;
+            counter++;
         }
 
         public void UpdatePosition (GameTime gameTime)
@@ -37,6 +40,9 @@ namespace Simple_Physics_Sandbox
 
         public Vector2 Position { get => position; set => position = value; }
         public Vector2 Velocity { get => velocity; set => velocity = value; }
+        public int Mass { get => mass; set => mass = value; }
+        public int Id { get => id; }
+        public HashSet<int> CollisionIds { get => collisionIds; set => collisionIds = value; }
 
         abstract public PhysicsObjectType GetPhysicsObjectType ();
     }

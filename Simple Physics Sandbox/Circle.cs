@@ -18,7 +18,7 @@ namespace Simple_Physics_Sandbox
             this.radius = radius;
         }
 
-        public Circle (float radius, Vector2 position, Vector2 velocity) : base(position, velocity)
+        public Circle (float radius, Vector2 position, Vector2 velocity, int mass) : base(position, velocity, mass)
         {
             this.radius = radius;
         }
