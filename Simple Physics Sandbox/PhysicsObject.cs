@@ -33,8 +33,20 @@ namespace Simple_Physics_Sandbox
             counter++;
         }
 
-        public void UpdatePosition (GameTime gameTime)
+        public void UpdatePosition (GameTime gameTime, float friction, float gravity)
         {
+            Vector2 direction;
+            if (velocity.X != 0 || velocity.Y != 0)
+            {
+                direction = velocity;
+                direction.Normalize();
+            }
+            else
+            {
+                direction = new Vector2();
+            }
+            
+            velocity -= direction * gravity * friction * (float)gameTime.ElapsedGameTime.TotalSeconds;
             position += velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
 

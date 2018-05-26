@@ -35,7 +35,7 @@ namespace Simple_Physics_Sandbox
         /// </summary>
         protected override void Initialize()
         {
-            physicsSpace = new PhysicsSpace(1280, 720, 80);
+            physicsSpace = new PhysicsSpace(1280, 720, 80, 0.03f);
             IsMouseVisible = true;
             prevMouseState = Mouse.GetState();
             mouseDownPosition = new Vector2();

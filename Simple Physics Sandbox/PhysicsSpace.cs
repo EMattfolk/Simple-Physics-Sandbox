@@ -12,14 +12,15 @@ namespace Simple_Physics_Sandbox
     class PhysicsSpace
     {
         private int width, height, gridSize;
-        private float friction;
+        private float friction, gravity = 982f;
         private List<PhysicsObject>[][] grid;
         private List<PhysicsObject> physicsObjects;
 
-        public PhysicsSpace (int width, int height, int gridSize)
+        public PhysicsSpace (int width, int height, int gridSize, float friction)
         {
             this.width = width;
             this.height = height;
+            this.friction = friction;
             if (width % gridSize == 0 && height % gridSize == 0)
             {
                 this.gridSize = gridSize;
@@ -55,7 +56,7 @@ namespace Simple_Physics_Sandbox
             //Update objects
             foreach (PhysicsObject physicsObject in physicsObjects)
             {
-                physicsObject.UpdatePosition(gameTime);
+                physicsObject.UpdatePosition(gameTime, friction, gravity);
                 physicsObject.CollisionIds.Clear();
                 if (physicsObject.GetPhysicsObjectType() == PhysicsObjectType.Circle)
                 {
