@@ -44,15 +44,6 @@ namespace Simple_Physics_Sandbox
 
         public void UpdateObjects (GameTime gameTime)
         {
-            //Clear current grid
-            foreach (List<PhysicsObject>[] row in grid)
-            {
-                foreach (List<PhysicsObject> cell in row)
-                {
-                    cell.Clear();
-                }
-            }
-
             //Update objects
             foreach (PhysicsObject physicsObject in physicsObjects)
             {
@@ -61,43 +52,37 @@ namespace Simple_Physics_Sandbox
                 if (physicsObject.GetPhysicsObjectType() == PhysicsObjectType.Circle)
                 {
                     Circle c = (Circle)physicsObject;
+                    if (c.Position.X + c.Radius > width)
+                    {
+                        physicsObject.Position = new Vector2(width - c.Radius, physicsObject.Position.Y);
+                        physicsObject.Velocity = new Vector2(-physicsObject.Velocity.X, physicsObject.Velocity.Y);
+                    }
                     if (c.Position.X - c.Radius < 0)
                     {
                         physicsObject.Position = new Vector2(c.Radius, physicsObject.Position.Y);
                         physicsObject.Velocity = new Vector2(-physicsObject.Velocity.X, physicsObject.Velocity.Y);
                     }
-                    else if (c.Position.X + c.Radius > width)
+                    if (c.Position.Y + c.Radius > height)
                     {
-                        physicsObject.Position = new Vector2(width - c.Radius, physicsObject.Position.Y);
-                        physicsObject.Velocity = new Vector2(-physicsObject.Velocity.X, physicsObject.Velocity.Y);
+                        physicsObject.Position = new Vector2(physicsObject.Position.X, height - c.Radius);
+                        physicsObject.Velocity = new Vector2(physicsObject.Velocity.X, -physicsObject.Velocity.Y);
                     }
                     if (c.Position.Y - c.Radius < 0)
                     {
                         physicsObject.Position = new Vector2(physicsObject.Position.X, c.Radius);
                         physicsObject.Velocity = new Vector2(physicsObject.Velocity.X, -physicsObject.Velocity.Y);
                     }
-                    else if (c.Position.Y + c.Radius > height)
-                    {
-                        physicsObject.Position = new Vector2(physicsObject.Position.X, height - c.Radius);
-                        physicsObject.Velocity = new Vector2(physicsObject.Velocity.X, -physicsObject.Velocity.Y);
-                    }
 
-                    int[] rows = { (int)((c.Position.Y - c.Radius) / gridSize), (int)((c.Position.Y + c.Radius) / gridSize) };
-                    int[] cols = { (int)((c.Position.Y - c.Radius) / gridSize), (int)((c.Position.Y + c.Radius) / gridSize) };
+                    //Place objects in grid
+                    int[] rows = { (int)((c.Position.Y - c.Radius) / gridSize), MathHelper.Min((int)((c.Position.Y + c.Radius) / gridSize), height / gridSize - 1) };
+                    int[] cols = { (int)((c.Position.Y - c.Radius) / gridSize), MathHelper.Min((int)((c.Position.Y + c.Radius) / gridSize), width / gridSize - 1) };
 
-                    grid[rows[0]][cols[0]].Add(physicsObject);
-                    if (rows[0] != rows[1] && rows[1] < height / gridSize)
+                    for (int i = rows[0]; i <= rows[1]; i++)
                     {
-                        grid[rows[1]][cols[0]].Add(physicsObject);
-                        if (cols[0] != cols[1] && cols[1] < width / gridSize)
+                        for (int j = cols[0]; j <= cols[1]; j++)
                         {
-                            grid[rows[0]][cols[1]].Add(physicsObject);
-                            grid[rows[1]][cols[1]].Add(physicsObject);
+                            grid[i][j].Add(physicsObject);
                         }
-                    }
-                    else if (cols[0] != cols[1] && cols[1] < width / gridSize)
-                    {
-                        grid[rows[0]][cols[1]].Add(physicsObject);
                     }
                 }
             }
@@ -118,15 +103,17 @@ namespace Simple_Physics_Sandbox
                                 //Handle collision for 2 circles
                                 if (cell[i].GetPhysicsObjectType() == PhysicsObjectType.Circle && cell[j].GetPhysicsObjectType() == PhysicsObjectType.Circle)
                                 {
-                                    if ((cell[i].Position - cell[j].Position).Length() < ((Circle)cell[i]).Radius + ((Circle)cell[j]).Radius)
+                                    Circle c1 = (Circle)cell[i], c2 = (Circle)cell[j];
+                                    if ((c1.Position - c2.Position).Length() < c1.Radius + c2.Radius)
                                     {
-                                        Vector2 angle = cell[i].Position - cell[j].Position, midpoint = (cell[i].Position + cell[j].Position) / 2;
+                                        Vector2 angle = c1.Position - c2.Position;
                                         angle.Normalize();
-                                        float impulse = (angle.X * (cell[j].Velocity.X - cell[i].Velocity.X) + angle.Y * (cell[j].Velocity.Y - cell[i].Velocity.Y)) / (1f / (2 * cell[i].Mass) + 1f / (2 * cell[i].Mass));
-                                        cell[i].Position = midpoint + angle * ((Circle)cell[i]).Radius;
-                                        cell[j].Position = midpoint - angle * ((Circle)cell[j]).Radius;
-                                        cell[i].Velocity += angle * (impulse / cell[i].Mass);
-                                        cell[j].Velocity -= angle * (impulse / cell[j].Mass);
+                                        Vector2 midpoint = (c1.Position - angle * c1.Radius + c2.Position + angle * c2.Radius) / 2;
+                                        float impulse = (angle.X * (c2.Velocity.X - c1.Velocity.X) + angle.Y * (c2.Velocity.Y - c1.Velocity.Y)) / (1f / (2 * c1.Mass) + 1f / (2 * c2.Mass));
+                                        cell[i].Position = midpoint + angle * c1.Radius;
+                                        cell[j].Position = midpoint - angle * c2.Radius;
+                                        cell[i].Velocity += angle * (impulse / c1.Mass);
+                                        cell[j].Velocity -= angle * (impulse / c2.Mass);
                                         cell[i].CollisionIds.Add(cell[j].Id);
                                         cell[j].CollisionIds.Add(cell[i].Id);
                                     }
@@ -134,6 +121,8 @@ namespace Simple_Physics_Sandbox
                             }
                         }
                     }
+                    //Clear used cell
+                    cell.Clear();
                 }
             }
             
