@@ -45,8 +45,16 @@ namespace Simple_Physics_Sandbox
             {
                 direction = new Vector2();
             }
-            
-            velocity -= direction * gravity * friction * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            float deltav = gravity * friction * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if (deltav > velocity.Length())
+            {
+                velocity = Vector2.Zero;
+            }
+            else
+            {
+                velocity -= direction * deltav;
+            }
             position += velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
 

@@ -35,8 +35,8 @@ namespace Simple_Physics_Sandbox
         /// </summary>
         protected override void Initialize()
         {
-            physicsSpace = new PhysicsSpace(1280, 720, 80, 0.0f);
-            physicsSpace.PhysicsObjects.Add(new Circle(100, new Vector2(200,200), Vector2.Zero, 100000));
+            physicsSpace = new PhysicsSpace(1280, 720, 80, 0.5f);
+            //physicsSpace.PhysicsObjects.Add(new Circle(100, new Vector2(200,200), Vector2.Zero, 100000));
             IsMouseVisible = true;
             prevMouseState = Mouse.GetState();
             mouseDownPosition = new Vector2();
@@ -83,7 +83,7 @@ namespace Simple_Physics_Sandbox
             }
             else if (mouseState.LeftButton == ButtonState.Released && prevMouseState.LeftButton == ButtonState.Pressed)
             {
-                physicsSpace.PhysicsObjects.Add(new Circle(100, mouseState.Position.ToVector2(), mouseDownPosition - mouseState.Position.ToVector2(), 100));
+                physicsSpace.PhysicsObjects.Add(new Circle(20, mouseState.Position.ToVector2(), mouseDownPosition - mouseState.Position.ToVector2(), 100));
             }
             prevMouseState = mouseState;
 
